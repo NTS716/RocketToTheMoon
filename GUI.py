@@ -3,6 +3,7 @@ from pygame.locals import *
 import sys
 from colors import *
 from space import SPACE
+from rocket import Rocket
 from Buttons import Button
 
 def main():
@@ -25,6 +26,15 @@ def main():
         FONT = pygame.font.SysFont('calibri', size)
         TEXT = FONT.render(text, 5, color)
         SCREEN.blit(TEXT, pos)
+
+    #Create the sprite lists
+    allSprites = pygame.sprite.Group()
+    rocket_list = pygame.sprite.Group() # This is a sloppy sprite list made for the intro for the rocket.
+
+    #Create the rocket
+    rocket = Rocket()
+    allSprites.add(rocket)
+    rocket_list.add(rocket)
 
     #Create the intro buttons
     playButton = Button(SCREEN, 'rect', (165, 485), (150, 75), GREEN)
@@ -57,11 +67,23 @@ def main():
 
     #Create the startGame 
     def startGame():
+        rocket.rect.x = 350
+        rocket.rect.y = 600
+
+    def rocketIntro():
+        rocket_list.draw(SCREEN)
+        if rocket.rect.y != 500:
+            rocket.rect.y -= 1
+        if rocket.rect.y == 500:
+            play()
+
+    def play():
         pass
 
     #Main pygame loop
     while True:
         SCREEN.blit(SPACE, (0,0))
+        print phase
         for event in pygame.event.get():
             if event.type == QUIT:
                 pygame.quit()
@@ -72,10 +94,11 @@ def main():
                     sys.exit()
                 if phase == 0 and playButton.touching(pygame.mouse.get_pos()):
                     phase = 1
+                    startGame()
         if phase == 0:
             intro()
         elif phase == 1:
-            startGame()
+            rocketIntro()
         pygame.display.update()
         clock.tick(fps)
 
