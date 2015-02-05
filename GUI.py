@@ -2,9 +2,10 @@ import pygame
 from pygame.locals import *
 import sys
 from colors import *
-from space import SPACE
+from space import Space
 from rocket import Rocket
 from Buttons import Button
+from asteroids import Asteroid
 
 def main():
     #Initialize Pygame
@@ -30,11 +31,22 @@ def main():
     #Create the sprite lists
     allSprites = pygame.sprite.Group()
     rocket_list = pygame.sprite.Group() # This is a sloppy sprite list made for the intro for the rocket.
+    asteroids = pygame.sprite.Group()
+
+    #Create an instance of the background
+    space = Space(SCREEN)
 
     #Create the rocket
     rocket = Rocket()
     allSprites.add(rocket)
     rocket_list.add(rocket)
+
+    #Create the asteroids
+    for i in range(8):
+        asteroid = Asteroid()
+        allSprites.add(asteroid)
+        asteroids.add(asteroid)  
+        asteroid.shuffle()
 
     #Create the intro buttons
     playButton = Button(SCREEN, 'rect', (165, 485), (150, 75), GREEN)
@@ -73,17 +85,17 @@ def main():
     def rocketIntro():
         rocket_list.draw(SCREEN)
         if rocket.rect.y != 500:
-            rocket.rect.y -= 1
-        if rocket.rect.y == 500:
-            play()
+            rocket.rect.y -= 2
 
     def play():
-        pass
+        rocket.move()
+        for asteroid in asteroids:
+            asteroid.scroll()
+        allSprites.draw(SCREEN)
 
     #Main pygame loop
     while True:
-        SCREEN.blit(SPACE, (0,0))
-        print phase
+        space.draw()
         for event in pygame.event.get():
             if event.type == QUIT:
                 pygame.quit()
@@ -99,6 +111,10 @@ def main():
             intro()
         elif phase == 1:
             rocketIntro()
+            if rocket.rect.y == 500:
+                phase = 2
+        elif phase == 2:
+            play()
         pygame.display.update()
         clock.tick(fps)
 
