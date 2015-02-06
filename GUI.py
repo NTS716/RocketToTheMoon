@@ -41,6 +41,20 @@ def main():
     allSprites.add(rocket)
     rocket_list.add(rocket)
 
+    #Create the lives images
+    life = pygame.image.load("./assets/rocket.png")
+    life = pygame.transform.scale(life, (20, 30))
+    def showLives():
+        if rocket.lives == 3:
+            SCREEN.blit(life, (700, 550))
+            SCREEN.blit(life, (740, 550))
+            SCREEN.blit(life, (780, 550))
+        elif rocket.lives == 2:
+            SCREEN.blit(life, (740, 550))
+            SCREEN.blit(life, (780, 550))
+        elif rocket.lives == 1:
+            SCREEN.blit(life, (780, 550))
+
     #Create the asteroids
     for i in range(8):
         asteroid = Asteroid()
@@ -92,6 +106,7 @@ def main():
         for asteroid in asteroids:
             asteroid.scroll()
         allSprites.draw(SCREEN)
+        showLives()
 
     #Main pygame loop
     while True:
@@ -115,6 +130,9 @@ def main():
                 phase = 2
         elif phase == 2:
             play()
+            collideList = pygame.sprite.spritecollide(rocket, asteroids, False)
+            if collideList:
+                rocket.explode()
         pygame.display.update()
         clock.tick(fps)
 
